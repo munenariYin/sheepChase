@@ -6,27 +6,36 @@ public class ObjectActionController : MonoBehaviour
 {
     private List<ObjectActionInfo> actionList = new List<ObjectActionInfo>();
 
-    void Start()
+    private void Start()
     {
-
+        
     }
 
-    void Update()
+    private void Update()
     {
+        foreach(var action in actionList)
+        {
+            if(!action.isActive)
+            {
+                continue;
+            }
 
+            action.Update();
+        }
     }
 
     /// <summary>
     /// 行動情報を入れたクラス。
     /// 行動をinterfacwで定義したため、こちら側で情報を定義
     /// </summary>
-    public class ObjectActionInfo
+    private class ObjectActionInfo
     {
         ObjectActionInfo()
         {
 
         }
-        public ObjectActionInterface action;
+        private ObjectActionInterface action = null;
+
         public bool isActive = false;
 
         public void Update()

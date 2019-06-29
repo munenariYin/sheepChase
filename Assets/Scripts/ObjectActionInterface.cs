@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public interface ObjectActionInterface
 {
-    void Init(GameObject gameObject);
+    void Init(GameObject _gameObject);
     void Update();
 }
