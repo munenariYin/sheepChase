@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WhistleContoller : MonoBehaviour
+public class WhistleController : MonoBehaviour
 {
     private Whistle whistle = null;
     private InputManager inputManagerCache = null;
@@ -11,6 +11,7 @@ public class WhistleContoller : MonoBehaviour
     void Start()
     {
         CreateWhistle();
+        this.inputManagerCache = Core.instance.inputManager;
     }
 
     // Update is called once per frame
@@ -21,7 +22,7 @@ public class WhistleContoller : MonoBehaviour
         {
             return;
         }
-
+        
         whistle.Position = this.inputManagerCache.Position;
 
         if(touchPhase == TouchPhase.Began)
@@ -37,9 +38,9 @@ public class WhistleContoller : MonoBehaviour
 
     private void CreateWhistle()
     {
-        var newGameObject = new GameObject();
-        newGameObject.name = "whistle";
-        this.whistle = newGameObject.AddComponent<Whistle>();
+        GameObject newGameObject = GameObject.Instantiate(Resources.Load("Prefabs/whistle")) as GameObject;
+        newGameObject.name = newGameObject.name.Replace("(Clone)", "");
+        this.whistle = newGameObject.GetComponent<Whistle>();
     }
 
 }
