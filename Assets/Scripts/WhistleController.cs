@@ -22,12 +22,12 @@ public class WhistleController : MonoBehaviour
         {
             return;
         }
-        
+
         whistle.Position = this.inputManagerCache.Position;
 
-        if(touchPhase == TouchPhase.Began)
+        if (touchPhase == TouchPhase.Began)
         {
-            if(this.whistle == null)
+            if (this.whistle == null)
             {
                 Debug.LogWarning("whistle is null !!");
                 this.CreateWhistle();

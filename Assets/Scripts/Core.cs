@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Core : MonoBehaviour
+public sealed class Core : MonoBehaviour
 {
     // =========================================================================
     // Property
     // ...
-
     static public Core instance
     {
         get;
@@ -20,7 +19,6 @@ public class Core : MonoBehaviour
         get;
         private set;
     }
-
 
     // =========================================================================
 

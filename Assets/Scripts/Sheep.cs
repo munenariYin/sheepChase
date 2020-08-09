@@ -19,16 +19,16 @@ public class Sheep : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(chaser == null)
+        if (chaser == null)
         {
             Debug.LogWarning("Not Found Dog.");
         }
 
         // 範囲判定(視界とかも欲しい気がする)
         float distance = (chaser.transform.localPosition - this.transform.localPosition).magnitude;
-        if(1.0f < distance)
+        if (1.0f < distance)
         {
-            Debug.Log(distance);
+            //Debug.Log(distance);
             return;
         }
 
