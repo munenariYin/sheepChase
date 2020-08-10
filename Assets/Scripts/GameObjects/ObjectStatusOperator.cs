@@ -42,7 +42,9 @@ public sealed class ObjectStatusOperator
         for(int index = 0; index < operationCount; index++)
         {
             operations[index] = ObjectStatusOperationFactory.CreateStatusOperation(operationMethods[index]);
-            accessProperties[index].Init(index, operationMethods[index]);
+            var accessProperty = new StatusOperationAccessProperty();
+            accessProperty.Init(index, operationMethods[index]);
+            accessProperties[index] = accessProperty;
         }
     }
 

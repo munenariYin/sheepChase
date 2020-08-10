@@ -24,112 +24,10 @@ public sealed class ActionExternalStatus
 
 public struct FieldObjectInitializeProperty
 {
-    ActionMethod[] allActionMethods;
-    ObjectStatusOperationMethod[] allStatusOperations;
-    ObjectStateInitializeProperty stateInitializeProperty;
+    public ActionMethod[] allActionMethods;
+    public ObjectStatusOperationMethod[] allStatusOperations;
+    public ObjectStateInitializeProperty[] stateInitializeProperties;
 } 
-
-public struct ObjectStateInitializeProperty
-{
-    ActionMethod[] actionMethods;
-    ObjectStatusOperationMethod[] statusOperations;
-}
-
-public struct TransitionDeciderProperty
-{
-    public int[] conditionJudgeMethods;
-    public int judgeType;
-    public int transitionIndex;
-}
-
-/// <summary>
-/// 状態を配列で所持する。
-/// </summary>
-public sealed class FieldObjectStateMachine
-{
-    private int currentStateIndex = 0;
-    private FieldObjectState[] states = null;
-
-    /// <summary>
-    ///  状態遷移
-    /// </summary>
-    /// <param name="actionStatus"></param>
-    /// <param name="externalStatus"></param>
-    /// <returns></returns>
-    public bool TransitionUpdate(ActionInternalStatus actionStatus, ActionExternalStatus externalStatus)
-    {
-        int nextStateIndex = -1;
-        if(states[currentStateIndex].CheckTransition(ref nextStateIndex, actionStatus, externalStatus))
-        {
-            currentStateIndex = nextStateIndex;
-            return true;
-        }
-        return false;
-    }
-
-    public FieldObjectState GetCurrentObjectState()
-    {
-        return states[currentStateIndex];
-    }
-}
-
-/// <summary>
-/// ステートマシンが持つ1つの状態
-/// </summary>
-public sealed class FieldObjectState
-{
-    private StateTransitionDecider[] transitionDeciders = null;
-    private ActionMethod[] actionMethods = null;
-    private ObjectStatusOperationMethod[] objectStatusOperations = null;
-
-    public void Init(ActionMethod[] actionMethods, ObjectStatusOperationMethod[] operations)
-    {
-        this.actionMethods = actionMethods;
-        this.objectStatusOperations = operations;
-    }
-    public bool CheckTransition(ref int nextStateIndex, ActionInternalStatus actionStatus, ActionExternalStatus externalStatus)
-    {
-        foreach(var decider in transitionDeciders)
-        {
-            if(decider.CheckTransition(actionStatus, externalStatus))
-            {
-                nextStateIndex = decider.transitionIndex;
-                return true; 
-            }
-        }
-        return false;
-    }
-}
-
-/// <summary>
-/// 状態遷移を行う
-/// </summary>
-public class StateTransitionDecider
-{
-    private int judgeType = 0; // sequenceなら全判定
-    private JudgeConditionInterface[] judgeConditions = null;
-    public int transitionIndex = 0;
-
-    public void Init(TransitionDeciderProperty property)
-    {
-        this.judgeType = property.judgeType;
-        //this.judgeConditions = property.conditionJudgeMethods;
-        this.transitionIndex = property.transitionIndex;
-    }
-
-    public bool CheckTransition(ActionInternalStatus actionStatus, ActionExternalStatus externalStatus)
-    {
-        foreach(var judge in judgeConditions)
-        {
-            if(! judge.CheckTransition(actionStatus, externalStatus))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
 
 // キャラクターが所持するクラス。
 public class FieldObject : MonoBehaviour
@@ -139,6 +37,7 @@ public class FieldObject : MonoBehaviour
     private FieldObjectRepository fieldObjectRepository = null;
     private ActionInternalStatus actionStatus =  new ActionInternalStatus();
     private ActionExternalStatus externalStatus = new ActionExternalStatus();
+    private FieldObjectStateMachine stateMachine = new FieldObjectStateMachine();
     private ActionExecuter actionExecuter = null;
     private ObjectStatusOperator statusOperator = null;
     public void SetRepository(FieldObjectRepository repository)
@@ -148,14 +47,49 @@ public class FieldObject : MonoBehaviour
     
     private void Awake()
     {
+        FieldObjectInitializeProperty initializeProperty = new FieldObjectInitializeProperty();
+        initializeProperty.allActionMethods = new ActionMethod[]{ActionMethod.Idle, ActionMethod.Move};
+        initializeProperty.allStatusOperations = new ObjectStatusOperationMethod[]{ObjectStatusOperationMethod.Acceleration, ObjectStatusOperationMethod.Deceleration};
+
+        // Stateのセット
+        // 0
+        ObjectStateInitializeProperty objectStateInitProp1 = new ObjectStateInitializeProperty();
+        objectStateInitProp1.actionMethods = new ActionMethod[]{ActionMethod.Idle};
+        objectStateInitProp1.statusOperations = new ObjectStatusOperationMethod[]{};
+        TransitionDeciderProperty prop1DeciderProp1 = new TransitionDeciderProperty();
+        prop1DeciderProp1.transitionIndex = 1;
+        prop1DeciderProp1.conditionJudgeMethods = new JudgeConditionMethod[]{JudgeConditionMethod.Timer};
+        objectStateInitProp1.transitionProperties = new TransitionDeciderProperty[]{prop1DeciderProp1};
+        // 1
+        ObjectStateInitializeProperty objectStateInitProp2 = new ObjectStateInitializeProperty();
+        objectStateInitProp2.actionMethods = new ActionMethod[]{ActionMethod.Move};
+        objectStateInitProp2.statusOperations = new ObjectStatusOperationMethod[]{ObjectStatusOperationMethod.Acceleration};
+        TransitionDeciderProperty prop2DeciderProp1 = new TransitionDeciderProperty();
+        prop2DeciderProp1.transitionIndex = 2;
+        prop2DeciderProp1.conditionJudgeMethods = new JudgeConditionMethod[]{JudgeConditionMethod.Timer};
+        objectStateInitProp2.transitionProperties = new TransitionDeciderProperty[]{prop2DeciderProp1};
+        // 2
+        ObjectStateInitializeProperty objectStateInitProp3 = new ObjectStateInitializeProperty();
+        objectStateInitProp3.actionMethods = new ActionMethod[]{ActionMethod.Move};
+        objectStateInitProp3.statusOperations = new ObjectStatusOperationMethod[]{ObjectStatusOperationMethod.Deceleration};
+        TransitionDeciderProperty prop3DeciderProp1 = new TransitionDeciderProperty();
+        prop3DeciderProp1.transitionIndex = 0;
+        prop3DeciderProp1.conditionJudgeMethods = new JudgeConditionMethod[]{JudgeConditionMethod.Timer};
+        objectStateInitProp3.transitionProperties = new TransitionDeciderProperty[]{prop3DeciderProp1};
+        // Stateの終わり
+        initializeProperty.stateInitializeProperties = new ObjectStateInitializeProperty[]{objectStateInitProp1, objectStateInitProp2, objectStateInitProp3};
+
+        stateMachine.Init(initializeProperty.stateInitializeProperties);
+
         actionExecuter = new ActionExecuter();
-        actionExecuter.Init(new ActionMethod[]{ActionMethod.Move});
-        actionExecuter.SetExecuteActions(new ActionMethod[]{ActionMethod.Move});
+        actionExecuter.Init(initializeProperty.allActionMethods);
+        actionExecuter.SetExecuteActions(stateMachine.GetCurrentObjectState().actionMethods);
 
         statusOperator = new ObjectStatusOperator();
-        statusOperator.Init(new ObjectStatusOperationMethod[]{ObjectStatusOperationMethod.Acceleration});
-        statusOperator.SetStatusOperations(new ObjectStatusOperationMethod[]{ObjectStatusOperationMethod.Acceleration});
+        statusOperator.Init(initializeProperty.allStatusOperations);
+        statusOperator.SetStatusOperations(stateMachine.GetCurrentObjectState().objectStatusOperations);
 
+        objectStatus = new ObjectStatus();
         actionStatus.objectStatus = objectStatus;
 
         actionStatus.targetDirection = Vector2.up;
@@ -164,6 +98,11 @@ public class FieldObject : MonoBehaviour
 
     private void Update()
     {
+        if(stateMachine.TransitionUpdate(actionStatus, externalStatus))
+        {
+            actionExecuter.SetExecuteActions(stateMachine.GetCurrentObjectState().actionMethods);
+            statusOperator.SetStatusOperations(stateMachine.GetCurrentObjectState().objectStatusOperations);
+        }
         statusOperator.OperationStatus(actionStatus, externalStatus);
         actionExecuter.Action(actionStatus, externalStatus);
 

@@ -11,10 +11,13 @@ public class Acceleration : ObjectStatusOperatorInterface
     // Update is called once per frame
     public void OperationStatus(ActionInternalStatus actionStatus, ActionExternalStatus externalStatus)
     {
-        actionStatus.speed += Time.deltaTime * 0.1f;
-        if(actionStatus.speed > 2.0f)
+        ObjectStatus objectStatus = actionStatus.objectStatus;
+        actionStatus.speed += (Time.deltaTime * objectStatus.accelSpeed);
+
+        float maxSpeed = objectStatus.maxSpeed;
+        if(actionStatus.speed > maxSpeed)
         {
-            actionStatus.speed= 2.0f;
+            actionStatus.speed = maxSpeed;
         }
     }
 }

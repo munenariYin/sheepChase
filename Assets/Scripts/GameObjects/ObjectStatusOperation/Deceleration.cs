@@ -7,10 +7,10 @@ public sealed class Deceleration : ObjectStatusOperatorInterface
     }
     public void OperationStatus(ActionInternalStatus actionStatus, ActionExternalStatus externalStatus)
     {
-        actionStatus.speed -= Time.deltaTime * 0.1f;
-        if(actionStatus.speed > 2.0f)
+        actionStatus.speed -= Time.deltaTime * actionStatus.objectStatus.decelSpeed;
+        if(actionStatus.speed < 0.0f)
         {
-            actionStatus.speed= 2.0f;
+            actionStatus.speed= 0.0f;
         }
     }
 }

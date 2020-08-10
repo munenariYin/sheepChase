@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-static public class ActionFactory
+﻿static public class ActionFactory
 {
     static public ObjectActionInterface CreateAction(ActionMethod type)
     {

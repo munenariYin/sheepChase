@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FieldObjectRepository
 {
-    private Dictionary<CharacterType, List<FieldObject>> objects = new Dictionary<CharacterType, List<FieldObject>>();
+    private Dictionary<int, List<FieldObject>> objects = new Dictionary<int, List<FieldObject>>();
 
     public FieldObjectRepository()
     {
@@ -13,16 +13,26 @@ public class FieldObjectRepository
     public void AddFieldObject(CharacterType charaType, FieldObject fieldObject)
     {
         List<FieldObject> addTargetList = null;
-        if(!objects.TryGetValue(charaType, out addTargetList))
+        int intCharaType = (int)charaType;
+        if(!objects.TryGetValue(intCharaType, out addTargetList))
         {
             addTargetList = new List<FieldObject>();
-            objects.Add(charaType, addTargetList);
+            objects.Add(intCharaType, addTargetList);
         }
         
         if(!addTargetList.Contains(fieldObject))
         {
             addTargetList.Add(fieldObject);
         }
+    }
+
+    public bool GetFieldObjects(CharacterType getType, out List<FieldObject> fieldObjects)
+    {
+        if (!objects.TryGetValue((int)getType, out fieldObjects))
+        {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -9,6 +9,8 @@ public class ObjectStatus : ScriptableObject
     [SerializeField]
     public float maxSpeed = 0.0f;
     [SerializeField]
+    public float accelSpeed = 0.0f;
+    [SerializeField]
     public float decelSpeed = 0.0f;
     [SerializeField]
     public float maxTurnAngle = 0.0f;

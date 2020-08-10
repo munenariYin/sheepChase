@@ -15,6 +15,10 @@ static public class ObjectStatusOperationFactory
             case ObjectStatusOperationMethod.Acceleration:
                 statusOperator = new Acceleration();
                 break;
+            case ObjectStatusOperationMethod.Deceleration:
+                statusOperator = new Deceleration();
+                break;
+
         }
         return statusOperator;
     }

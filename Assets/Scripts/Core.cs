@@ -20,6 +20,12 @@ public sealed class Core : MonoBehaviour
         private set;
     }
 
+    public FieldObjectRepository fieldObjectRepository
+    {
+        get;
+        private set;
+    }
+
     // =========================================================================
 
 
@@ -70,6 +76,8 @@ public sealed class Core : MonoBehaviour
         instance = this;
 
         inputManager = new InputManager();
+
+        fieldObjectRepository = new FieldObjectRepository();
     }
 
     //=========================================================================
