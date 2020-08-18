@@ -1,15 +1,39 @@
-﻿
-public struct ObjectStateInitializeProperty
+﻿public enum StateTransitionJudgeType
 {
-    public ActionMethod[] actionMethods;
-    public ObjectStatusOperationMethod[] statusOperations;
-    public TransitionDeciderProperty[] transitionProperties;
+    Sequence,
+    Limit,
 }
 
+[MessagePack.MessagePackObject]
+public struct FieldObjectInitializeProperty
+{
+    [MessagePack.Key(0)]
+    public ObjectStateInitializeProperty[] stateInitializeProperties;
+    [MessagePack.Key(1)]
+    public ActionMethod[] allActionMethods;
+    [MessagePack.Key(2)]
+    public ObjectStatusOperationMethod[] allStatusOperations;
+} 
+
+[MessagePack.MessagePackObject]
+public struct ObjectStateInitializeProperty
+{
+    [MessagePack.Key(0)]
+    public TransitionDeciderProperty[] transitionProperties;
+    [MessagePack.Key(1)]
+    public ActionMethod[] actionMethods;
+    [MessagePack.Key(2)]
+    public ObjectStatusOperationMethod[] statusOperations;
+}
+
+[MessagePack.MessagePackObject]
 public struct TransitionDeciderProperty
 {
+    [MessagePack.Key(0)]
     public JudgeConditionMethod[] conditionJudgeMethods;
+    [MessagePack.Key(1)]
     public int judgeType;
+    [MessagePack.Key(2)]
     public int transitionIndex;
 }
 

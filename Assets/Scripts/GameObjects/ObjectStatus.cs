@@ -18,9 +18,22 @@ public class ObjectStatus : ScriptableObject
     public CharacterType characterType = CharacterType.Limit;
 }
 
-public struct ObjectExternalStatus
+// 行動系統の処理に必要
+// 行動クラスで変更せず、判断クラスでだけ値をいじれるようにしたい
+public sealed class ActionInternalStatus
 {
-    Vector3 Position;
+    public float speed;
+    public Vector2 targetDirection;
+    public ObjectStatus objectStatus;
+}
+
+/// <summary>
+/// 
+/// </summary>
+public sealed class ActionExternalStatus
+{
+    public Vector2 Position;
+    public Quaternion Rotation;
 }
 
 static class VectorHelper
