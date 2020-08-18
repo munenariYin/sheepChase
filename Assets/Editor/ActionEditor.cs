@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using UnityEditor.Graphs;
+using System.Collections.Generic;
+
 
 public class ActionEditor : EditorWindow
 {
@@ -9,8 +10,10 @@ public class ActionEditor : EditorWindow
     //private ActionGraphGUI stateMachineGraphGUI = null;
 
     private Vector2 scrollPos = new Vector2();
-    Node testNode = new Node();
-    Color editorColor = new Color(0.25f, 0.4f, 0.25f);
+
+    private Node targetNode = new Node();
+    private List<Node> nodes = new List<Node>();
+    private Color editorColor = new Color(0.25f, 0.4f, 0.25f);
 
     [MenuItem("Window/ActionEditor")]
     static private void OnOpen()
@@ -18,12 +21,10 @@ public class ActionEditor : EditorWindow
         actionEditorWindow = GetWindow<ActionEditor>();
         actionEditorWindow.titleContent.text = "ActionEditor";
         actionEditorWindow.wantsMouseMove = true;
-
     }
 
     private void Update()
     {
-        MouseEventProc(Event.current);
         Repaint();
     }
 
@@ -33,9 +34,42 @@ public class ActionEditor : EditorWindow
         {
             return;
         }
-
+        MouseEventProc(Event.current);
         DrawBackGround();
         DrawNodeWindow();
+
+
+        //EditorGUILayout.BeginHorizontal(EditorStyles.toolbar, new GUILayoutOption[] { GUILayout.ExpandWidth(true) });
+        //GUILayout.Button("AAAAAAA", EditorStyles.toolbarButton, GUILayout.Width(70));
+        //EditorGUILayout.EndVertical();
+
+        Rect areaRect = new Rect(0.0f, 0.0f, 100, 100);
+        areaRect = GUILayout.Window(50, areaRect, WindowFunction, "WindowEEEE", new GUIStyle(GUI.skin.window), //("View", new GUIStyle(GUI.skin.box),
+GUILayout.ExpandWidth(true),
+GUILayout.ExpandHeight(true));
+
+
+        Vector2 position = new Vector2(-10, 00);
+        EditorGUILayout.BeginVertical(GUILayout.Width(100),
+            GUILayout.MaxWidth(100),
+            GUILayout.MinWidth(100));
+        EditorGUILayout.EndVertical();
+
+        //GUILayout.BeginVertical(
+        //    GUILayout.Width(100),
+        //    GUILayout.MaxWidth(100),
+        //    GUILayout.MinWidth(100));
+        //GUILayout.Area("View", new GUIStyle(GUI.skin.box),
+        //GUILayout.ExpandWidth(true),
+        //GUILayout.ExpandHeight(true));
+
+        //GUILayout.EndVertical();
+
+
+        //EditorGUILayout.BeginVertical(EditorStyles.popup, new GUILayoutOption[] { GUILayout.ExpandHeight(true) });
+
+        //EditorGUILayout.EndHorizontal();
+
 
         //this.stateMachineGraphGUI.BeginGraphGUI(actionEditorWindow, this.graphGUIWindowRect);
         //// OnGraphGUIで矩形選択が可能に
@@ -46,13 +80,20 @@ public class ActionEditor : EditorWindow
         //this.stateMachineGraphGUI.EndGraphGUI();
     }
 
+    private void WindowFunction(int windowId)
+    {
+        GUI.DragWindow();
+        GUI.Box(new Rect(5, 5, 10,10), "BBB");
+        Debug.Log("AAAAA");
+    }
+
     private void DrawNodeWindow()
     {
-        Rect scrolledNode = testNode.GetRect();
+        Rect scrolledNode = targetNode.GetRect();
         scrolledNode.position = (scrolledNode.position - this.scrollPos);
 
         if(actionEditorWindow.rootVisualElement.contentRect.
-           Overlaps(testNode.GetRect()))
+           Overlaps(targetNode.GetRect()))
         {
             GUI.Box(scrolledNode, "AAA");
         }
@@ -63,13 +104,13 @@ public class ActionEditor : EditorWindow
         switch(_mouseEvent.type)
         {
             case EventType.MouseDown:
-                testNode.Hold(_mouseEvent.mousePosition);
+                targetNode.Hold(_mouseEvent.mousePosition);
                 break;
             case EventType.MouseDrag:
-                testNode.Draged(_mouseEvent.delta);
+                targetNode.Draged(_mouseEvent.delta);
                 break;
             case EventType.MouseUp:
-                testNode.Pulled();
+                targetNode.Pulled();
                 break;
         }
     }

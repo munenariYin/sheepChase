@@ -12,7 +12,6 @@ public class Node
         return this.nodeRect;
     }
 
-    bool holded = false;
     public Node()
     {
     }
@@ -20,7 +19,7 @@ public class Node
     public void Hold(Vector2 _mousePosition)
     {
         if (!this.nodeRect.Contains(_mousePosition)) return;
-        this.holded = true;
+
         Debug.Log("Holded");
     }
 
@@ -31,7 +30,6 @@ public class Node
 
     public void Pulled()
     {
-        this.holded = false;
         Debug.Log("Release");
     }
 

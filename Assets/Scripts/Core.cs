@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Core : MonoBehaviour
+public sealed class Core : MonoBehaviour
 {
     // =========================================================================
     // Property
     // ...
-
     static public Core instance
     {
         get;
@@ -21,6 +20,11 @@ public class Core : MonoBehaviour
         private set;
     }
 
+    public FieldObjectRepository fieldObjectRepository
+    {
+        get;
+        private set;
+    }
 
     // =========================================================================
 
@@ -72,6 +76,8 @@ public class Core : MonoBehaviour
         instance = this;
 
         inputManager = new InputManager();
+
+        fieldObjectRepository = new FieldObjectRepository();
     }
 
     //=========================================================================

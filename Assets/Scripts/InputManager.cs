@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputManager
+[System.Serializable]
+public sealed class InputManager
 {
-    [SerializeField] private float touchPhaseMoveMagunitude = 1.0f;
     private TouchPhase touchPhase;
-    private Vector2 deltaPosition;
     private Vector2 position;
-
+    private Vector2 deltaPosition;
     private const int UseTouchArrayNum = 0;
 
     public Vector2 Position
@@ -31,12 +30,10 @@ public class InputManager
     public void Update()
     {
 
-#if UNITY_ANDROID
-        AndroidInput();
-#endif
-
 #if UNITY_EDITOR
         EditorInput();
+#else
+        AndroidInput();
 #endif
         Debug.Log(position);
     }
@@ -57,48 +54,42 @@ public class InputManager
 
     private void EditorInput()
     {
-        if(!Input.GetMouseButtonDown(0))
+        // 入力があった
+        if(Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
         {
-            // 離れた状態の時の管理
-            if(this.touchPhase == TouchPhase.Canceled)
-            {
-                this.touchPhase = TouchPhase.Ended;
-            }
+            Vector2 nowMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            if(this.touchPhase != TouchPhase.Ended)
+            // 以前に押されていない時の処理
+            if(this.touchPhase == TouchPhase.Canceled || this.touchPhase == TouchPhase.Ended)
             {
-                this.touchPhase = TouchPhase.Canceled;
+                this.deltaPosition = Vector2.zero;
+                this.position = nowMousePosition;
+                this.touchPhase = TouchPhase.Began;
             }
-
+            else
+            {
+                this.deltaPosition = nowMousePosition - this.position;;
+                this.position = nowMousePosition;
+                if (this.deltaPosition != Vector2.zero)
+                {
+                    this.touchPhase = TouchPhase.Moved;
+                }
+                else
+                {
+                    this.touchPhase = TouchPhase.Stationary;
+                }
+            }            
             return;
         }
-
-        Vector2 nowMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        if(this.touchPhase == TouchPhase.Canceled || this.touchPhase == TouchPhase.Ended)
+        // 入力が終わった
+        else if (Input.GetMouseButtonUp(0))
         {
             this.deltaPosition = Vector2.zero;
-            this.position = nowMousePosition;
-
-            this.touchPhase = TouchPhase.Began;
-
-            return;
-        }
-
-        Vector2 deltaMousePosition = nowMousePosition - this.position;
-
-        this.deltaPosition = deltaMousePosition;
-        this.position = nowMousePosition;
-        if (this.touchPhaseMoveMagunitude < deltaMousePosition.magnitude)
-        {
-            this.touchPhase = TouchPhase.Moved;
+            this.touchPhase = TouchPhase.Canceled;            
         }
         else
         {
-            this.touchPhase = TouchPhase.Stationary;
+            this.deltaPosition = Vector2.zero;
         }
     }
-
-
-
 }
